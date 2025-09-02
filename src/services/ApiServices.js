@@ -20,7 +20,8 @@ class ApiServices {
   }
   static async get(url) {
     try {
-      await api.get(url);
+      var res = await api.get(url);
+      return res.data;
     } catch (e) {
       console.error("Error in get function:", e);
       throw e;
