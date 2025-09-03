@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { Box, FormControl, FormLabel } from "@mui/material";
 import ApiServices from "../../services/ApiServices";
-import { useSnackBar } from "../../context/SnackbarContent";
+import { useSnackBar } from "../../context/SnackbarContext";
 
 const LoginScreen = () => {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ const LoginScreen = () => {
       });
       res
         .then(() => {
-          navigate("/home");
+          navigate("/dashboard");
         })
         .catch((e) => {
           console.log("error");

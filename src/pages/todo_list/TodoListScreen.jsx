@@ -1,10 +1,7 @@
 import { Box, Container, Grid, Typography } from "@mui/material";
 import NoDataFound from "../../components/NoDataFound";
-import { useState } from "react";
 import TodoTile from "../../components/TodoTile";
-import ApiServices from "../../services/ApiServices";
 const TodoListScreen = ({ data }) => {
-  const [tileChecked, setTileChecked] = useState(false);
   // async function deleteItem(id) {
   //   await ApiServices.delete(`/todo/${id}`);
   // }
@@ -32,20 +29,14 @@ const TodoListScreen = ({ data }) => {
     );
   }
   return (
-    <Container
-      sx={{
-        marginTop: 3,
-      }}
-    >
-      {data.map((x) => (
-        <TodoTile
-          key={x.Id}
-          isTileChecked={tileChecked}
-          setTileChecked={setTileChecked}
-          // deleteToDoItem={deleteItem}
-          tileInfo={x}
-        />
-      ))}
+    <Container sx={{ my: 3 }}>
+      <Grid container spacing={3}>
+        {data.map((x) => (
+          <Grid item key={x.Id} xs={12} sm={6} md={4}>
+            <TodoTile tileInfo={x} />
+          </Grid>
+        ))}
+      </Grid>
     </Container>
   );
 };

@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { InputLabel, Box } from "@mui/material";
 import ApiServices from "../../services/ApiServices";
-import { useSnackBar } from "../../context/SnackbarContent";
+import { useSnackBar } from "../../context/SnackbarContext";
 
 const RegisterScreen = () => {
   const navigate = useNavigate();

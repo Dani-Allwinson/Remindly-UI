@@ -2,12 +2,11 @@ import { Box, Checkbox, Typography, IconButton, Grid } from "@mui/material";
 import Tag from "./Tags";
 import { convertDateTime } from "../utils/CommonUtils";
 import InsertInvitationOutlinedIcon from "@mui/icons-material/InsertInvitationOutlined";
-const TodoTile = ({
-  isTileChecked,
-  setTileChecked,
-  tileInfo,
-  // deleteToDoItem,
-}) => {
+import { useState } from "react";
+
+const TodoTile = ({ tileInfo }) => {
+  const [tileChecked, setTileChecked] = useState(false);
+
   return (
     <Box
       sx={{
@@ -17,6 +16,7 @@ const TodoTile = ({
         backgroundColor: "#fff",
         borderRadius: 3,
         padding: 2,
+        margin: 2,
       }}
     >
       <Box
@@ -36,9 +36,10 @@ const TodoTile = ({
             color: "#61758A",
             borderWidth: 0.3,
           }}
-          value="test"
-          checked={isTileChecked}
-          onChange={() => {
+          value="Completed"
+          checked={tileChecked}
+          onChange={(e) => {
+            console.log(e);
             setTileChecked((prev) => !prev);
           }}
           color="primary"

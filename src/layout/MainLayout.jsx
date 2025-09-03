@@ -4,12 +4,11 @@ import { Box, Typography, IconButton, Grid } from "@mui/material";
 import SideBar from "../components/SideBar";
 import ProfileIcon from "../components/ProfileIcon";
 import FavIcon from "../assets/notification_logo.png";
-import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
-
+import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import { getTitle } from "../utils/CommonUtils";
 
 const MainLayout = ({ children }) => {
@@ -24,9 +23,9 @@ const MainLayout = ({ children }) => {
   const sideBarNav = [
     {
       id: 1,
-      title: "My Tasks",
-      icon: <ChecklistOutlinedIcon />,
-      navigateTo: "/home",
+      title: "Dashboard",
+      icon: <GridViewOutlinedIcon />,
+      navigateTo: "/dashboard",
     },
     {
       id: 2,

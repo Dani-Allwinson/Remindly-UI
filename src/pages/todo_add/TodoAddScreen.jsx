@@ -1,15 +1,13 @@
-import {
-  TextareaAutosize,
-  FormControl,
-  FormLabel,
-  Box,
-  MenuItem,
-  ButtonGroup,
-  Button,
-} from "@mui/material";
+import { FormLabel, Box, MenuItem, Button } from "@mui/material";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import ApiServices from "../../services/ApiServices";
+import { useNavigate } from "react-router-dom";
+import { useSnackBar } from "../../context/SnackbarContext";
+import { useProgressSpinner } from "../../context/SpinnerLoadingContext";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import TodoSubTask from "./TodoSubTask";
 
 const TodoAddScreen = () => {
   const [taskName, setTaskName] = useState("");
@@ -17,7 +15,67 @@ const TodoAddScreen = () => {
   const [categoryName, setCategoryName] = useState("");
   const [priority, setPriority] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [subTaskList, setSubTaskList] = useState([]);
+  const [subTask, setSubTask] = useState("");
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
+  const { showSpinner, hideSpinner } = useProgressSpinner();
+  const count = useRef(1);
+  const listRef = useRef(null);
+  function addSubTask(value) {
+    setSubTaskList((prev) => [
+      ...prev,
+      {
+        id: count.current++,
+        name: value,
+      },
+    ]);
+    setSubTask("");
+    listRef.current?.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }
 
+  function completedTask(value) {
+    console.log("completed task: " + value);
+  }
+
+  function deleteSubTask(value) {
+    var newSubTasks = subTaskList.filter((x) => x.id !== value);
+    setSubTaskList(newSubTasks);
+  }
+
+  async function saveTask() {
+    showSpinner();
+    var payload = {
+      Title: taskName,
+      Description: taskDesc,
+      DueDate: dueDate,
+      Status: "Pending",
+      UpdatedBy: "Dani",
+      SubTasks: subTaskList,
+    };
+    if (taskName != "" && taskDesc != "" && dueDate != "") {
+      var response = ApiServices.post("/todo", payload);
+      response
+        .then(() => {
+          navigate("/dashboard");
+        })
+        .catch((e) => {
+          showSnackBar(e.reponse.data);
+        })
+        .finally(() => hideSpinner());
+    }
+  }
+
+  function clear() {
+    setTaskName("");
+    setCategoryName("");
+    setPriority("");
+    setDueDate("");
+    setTaskDesc("");
+  }
   return (
     <>
       <Container
@@ -26,65 +84,78 @@ const TodoAddScreen = () => {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          height: "80vh",
+          height: "90vh",
         }}
       >
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
-            justifyContent: "flex-end",
-            alignItems: "end",
+            alignItems: "stretch", // stretch children to equal width
+            backgroundColor: "#fff",
+            padding: 3,
+            borderRadius: 2,
+            width: "40vw",
+            maxHeight: "80vh",
+            boxShadow: 3,
           }}
         >
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center",
-              gap: 3,
+              gap: 2,
             }}
           >
             {/* Task Name */}
             <Box>
-              <FormLabel sx={{ color: "#000" }}>Task Name</FormLabel>
+              <FormLabel sx={{ color: "#000", fontWeight: "bold" }}>
+                Task Name
+              </FormLabel>
               <TextField
                 fullWidth
                 id="task-name"
                 placeholder="e.g., Design the new landing page"
                 value={taskName}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    height: 40, // custom height
+                  },
+                }}
                 onChange={(e) => setTaskName(e.target.value)}
               />
             </Box>
 
             {/* Description */}
             <Box>
-              <FormLabel sx={{ color: "#000" }}>Description</FormLabel>
+              <FormLabel sx={{ color: "#000", fontWeight: "bold" }}>
+                Description
+              </FormLabel>
               <TextField
                 id="task-description"
                 fullWidth
                 multiline
                 placeholder="e.g., Create mockups and prototypes for the new website landing page."
                 value={taskDesc}
-                maxRows={4}
                 minRows={4}
-                rows={4}
                 onChange={(e) => setTaskDesc(e.target.value)}
               />
             </Box>
 
-            {/* Category */}
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-              }}
-            >
-              <Box width="20vw">
-                <FormLabel sx={{ color: "#000" }}>Category</FormLabel>
+            {/* Category & Priority */}
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Box flex={1}>
+                <FormLabel sx={{ color: "#000", fontWeight: "bold" }}>
+                  Category
+                </FormLabel>
                 <TextField
                   select
                   fullWidth
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      height: 40, // custom height
+                    },
+                  }}
                   id="task-category"
                   placeholder="Select Category"
                   value={categoryName}
@@ -95,11 +166,18 @@ const TodoAddScreen = () => {
                   <MenuItem value="marketing">Marketing</MenuItem>
                 </TextField>
               </Box>
-              <Box width="20vw">
-                <FormLabel sx={{ color: "#000" }}>Priority</FormLabel>
+              <Box flex={1}>
+                <FormLabel sx={{ color: "#000", fontWeight: "bold" }}>
+                  Priority
+                </FormLabel>
                 <TextField
                   select
                   fullWidth
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      height: 40, // custom height
+                    },
+                  }}
                   id="task-priority"
                   placeholder="Select Priority"
                   value={priority}
@@ -111,31 +189,109 @@ const TodoAddScreen = () => {
                 </TextField>
               </Box>
             </Box>
+
             {/* Due Date */}
             <Box>
-              <FormLabel sx={{ color: "#000" }}>Due Date</FormLabel>
+              <FormLabel sx={{ color: "#000", fontWeight: "bold" }}>
+                Due Date
+              </FormLabel>
               <TextField
                 fullWidth
+                sx={{
+                  "& .MuiInputBase-root": {
+                    height: 40, // custom height
+                  },
+                }}
                 id="task-due-date"
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
               />
             </Box>
+
+            {/* Sub Tasks */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <Box flex={1}>
+                <FormLabel sx={{ color: "#000", fontWeight: "bold" }}>
+                  Sub Tasks
+                </FormLabel>
+                <TextField
+                  fullWidth
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      height: 40, // custom height
+                    },
+                  }}
+                  id="task-sub-tasks"
+                  placeholder="Add a new sub task..."
+                  value={subTask}
+                  onChange={(e) => setSubTask(e.target.value)}
+                />
+              </Box>
+              <Button
+                aria-label="add-icon"
+                variant="outlined"
+                sx={{
+                  minWidth: 40,
+                  height: 40,
+                  mt: 3,
+                }}
+                onClick={() => addSubTask(subTask)}
+              >
+                <AddOutlinedIcon />
+              </Button>
+            </Box>
+            <Box
+              ref={listRef}
+              sx={{
+                maxHeight: 60,
+                overflowY: "scroll",
+              }}
+            >
+              {subTaskList &&
+                Array.isArray(subTaskList) &&
+                subTaskList.map((x, index) => (
+                  <div key={index}>
+                    <TodoSubTask
+                      taskInfo={x}
+                      deleteTask={deleteSubTask}
+                      completedTask={completedTask}
+                    ></TodoSubTask>
+                  </div>
+                ))}
+            </Box>
           </Box>
 
+          {/* Action Buttons */}
           <Box
             sx={{
               display: "flex",
-              height: 30,
+              justifyContent: "flex-end",
               gap: 2,
-              pt: 2,
+              pt: 3,
             }}
           >
-            <Button variant="contained" color="inherit">
+            <Button
+              variant="contained"
+              sx={{ textTransform: "none" }}
+              color="inherit"
+              onClick={() => clear()}
+            >
               Clear
             </Button>
-            <Button variant="contained">Save</Button>
+            <Button
+              variant="contained"
+              sx={{ textTransform: "none" }}
+              onClick={() => saveTask()}
+            >
+              Save
+            </Button>
           </Box>
         </Box>
       </Container>

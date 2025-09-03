@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import ApiServices from "../../services/ApiServices";
-import { useSnackBar } from "../../context/SnackbarContent";
+import { useSnackBar } from "../../context/SnackbarContext";
 import TodoListScreen from "../todo_list/TodoListScreen";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
+import { useProgressSpinner } from "../../context/SpinnerLoadingContext";
 
 const fabStyle = {
   position: "absolute",
@@ -15,16 +16,22 @@ const HomeScreen = () => {
   const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const { showSnackBar } = useSnackBar();
+  const { showSpinner, hideSpinner } = useProgressSpinner();
+
   function fetchData() {
-    var response = ApiServices.get("/todo/list");
-    console.log(response);
-    response
-      .then((res) => {
-        setTodos(res);
-      })
-      .catch((e) => {
-        showSnackBar(e.response.data);
-      });
+    showSpinner();
+    setTimeout(() => {
+      var response = ApiServices.get("/todo/list");
+      console.log(response);
+      response
+        .then((res) => {
+          setTodos(res);
+        })
+        .catch((e) => {
+          showSnackBar(e.response.data);
+        })
+        .finally(() => hideSpinner());
+    }, 500);
   }
 
   useEffect(() => {
