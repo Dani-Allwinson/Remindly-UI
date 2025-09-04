@@ -23,11 +23,14 @@ const TodoAddScreen = () => {
   const count = useRef(1);
   const listRef = useRef(null);
   function addSubTask(value) {
+    console.log(value);
     setSubTaskList((prev) => [
       ...prev,
       {
-        id: count.current++,
-        name: value,
+        Id: count.current++,
+        Name: value,
+        Status: "Pending",
+        CreatedBy: "Dani",
       },
     ]);
     setSubTask("");
@@ -42,7 +45,7 @@ const TodoAddScreen = () => {
   }
 
   function deleteSubTask(value) {
-    var newSubTasks = subTaskList.filter((x) => x.id !== value);
+    var newSubTasks = subTaskList.filter((x) => x.Id !== value);
     setSubTaskList(newSubTasks);
   }
 
@@ -56,6 +59,8 @@ const TodoAddScreen = () => {
       UpdatedBy: "Dani",
       SubTasks: subTaskList,
     };
+
+    console.log(payload);
     if (taskName != "" && taskDesc != "" && dueDate != "") {
       var response = ApiServices.post("/todo", payload);
       response

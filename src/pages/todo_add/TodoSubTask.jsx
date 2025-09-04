@@ -20,8 +20,8 @@ const TodoSubTask = ({ taskInfo, deleteTask, completedTask }) => {
             onChange={(e) => {
               console.log(e);
               setTaskChecked((prev) => !prev);
-              completedTask(taskInfo.id);
-              setCompletedChecked(taskInfo.id);
+              completedTask(taskInfo.Id);
+              setCompletedChecked(taskInfo.Id);
             }}
             color="primary"
           />
@@ -33,10 +33,10 @@ const TodoSubTask = ({ taskInfo, deleteTask, completedTask }) => {
             color="initial"
             sx={{
               textDecoration:
-                isCompletedChecked === taskInfo.id ? "line-through" : "none",
+                isCompletedChecked === taskInfo.Id ? "line-through" : "none",
             }}
           >
-            {taskInfo.name}
+            {taskInfo.Name}
           </Typography>
         </Grid>
         <Grid size={2}>
@@ -44,7 +44,7 @@ const TodoSubTask = ({ taskInfo, deleteTask, completedTask }) => {
             aria-label="delete"
             onClick={() => {
               console.log("delete");
-              deleteTask(taskInfo.id);
+              deleteTask(taskInfo.Id);
             }}
           >
             <DeleteOutlineOutlinedIcon />
