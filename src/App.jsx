@@ -9,7 +9,7 @@ import CategoryScreen from "./pages/category/CategoryScreen";
 import CalendarScreen from "./pages/calendar/CalendarScreen";
 import TodoAddScreen from "./pages/todo_add/TodoAddScreen";
 import SpinnerContextProvider from "./context/SpinnerLoadingContext";
-
+import TodoViewScreen from "./pages/todo_view/TodoViewScreen";
 function App() {
   return (
     <SpinnerContextProvider>
@@ -24,6 +24,8 @@ function App() {
               <Route path="/category" element={<CategoryScreen />}></Route>
               <Route path="/calendar" element={<CalendarScreen />}></Route>
               <Route path="/add" element={<TodoAddScreen />}></Route>
+              <Route path="/view/:id" element={<TodoViewScreen />}></Route>
+              <Route path="/edit/:id" element={<TodoAddScreen />}></Route>
             </Routes>
           </MainLayout>
         </BrowserRouter>

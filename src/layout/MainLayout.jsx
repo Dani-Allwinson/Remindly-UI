@@ -14,7 +14,7 @@ import { getTitle } from "../utils/CommonUtils";
 const MainLayout = ({ children }) => {
   const routeName = useLocation();
   const [showProfile, setShowProfile] = useState(false);
-  const title = getTitle(routeName.pathname);
+  const title = getTitle(routeName.pathname.split("/")[1]);
 
   useEffect(() => {
     setShowProfile(["/login", "/register"].includes(routeName.pathname));

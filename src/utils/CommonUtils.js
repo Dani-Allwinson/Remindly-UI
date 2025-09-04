@@ -1,13 +1,17 @@
 export function getTitle(routeName) {
   switch (routeName.toLocaleLowerCase()) {
-    case "/dashboard":
+    case "dashboard":
       return "Dashboard";
-    case "/category":
+    case "category":
       return "Category";
-    case "/calendar":
+    case "calendar":
       return "Calender";
-    case "/add":
+    case "add":
       return "Add Task";
+    case "view":
+      return "View Task";
+    case "edit":
+      return "Edit Task";
   }
 }
 

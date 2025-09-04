@@ -2,10 +2,10 @@ import { Box, Checkbox, Typography, IconButton, Grid } from "@mui/material";
 import Tag from "./Tags";
 import { convertDateTime } from "../utils/CommonUtils";
 import InsertInvitationOutlinedIcon from "@mui/icons-material/InsertInvitationOutlined";
-import { useState } from "react";
+// import { useState } from "react";
 
-const TodoTile = ({ tileInfo }) => {
-  const [tileChecked, setTileChecked] = useState(false);
+const TodoTile = ({ tileInfo, onClick }) => {
+  // const [tileChecked, setTileChecked] = useState(false);
 
   return (
     <Box
@@ -17,7 +17,10 @@ const TodoTile = ({ tileInfo }) => {
         borderRadius: 3,
         padding: 2,
         margin: 2,
+        gap: 2,
+        cursor:"pointer"
       }}
+      onClick={onClick}
     >
       <Box
         sx={{
@@ -31,7 +34,7 @@ const TodoTile = ({ tileInfo }) => {
         <Box>
           <Tag type={"Home"}></Tag>
         </Box>
-        <Checkbox
+        {/* <Checkbox
           sx={{
             color: "#61758A",
             borderWidth: 0.3,
@@ -43,7 +46,7 @@ const TodoTile = ({ tileInfo }) => {
             setTileChecked((prev) => !prev);
           }}
           color="primary"
-        />
+        /> */}
       </Box>
 
       <Box

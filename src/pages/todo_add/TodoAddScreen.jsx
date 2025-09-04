@@ -1,9 +1,9 @@
 import { FormLabel, Box, MenuItem, Button } from "@mui/material";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ApiServices from "../../services/ApiServices";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useSnackBar } from "../../context/SnackbarContext";
 import { useProgressSpinner } from "../../context/SpinnerLoadingContext";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -22,8 +22,31 @@ const TodoAddScreen = () => {
   const { showSpinner, hideSpinner } = useProgressSpinner();
   const count = useRef(1);
   const listRef = useRef(null);
+  const routeName = useLocation();
+  const { id } = useParams();
+  const taskId = useRef(0);
+  const taskLastUpdateDate = useRef(null);
+
+  function getTodo() {
+    const response = ApiServices.get(`/todo/${id}`);
+    response.then((res) => {
+      const date = res.DueDate.toString().split("T")[0];
+      setTaskName(res.Title);
+      setTaskDesc(res.Description);
+      setSubTaskList(res.Subtasks);
+      taskId.current = res.Id;
+      taskLastUpdateDate.current = res.LastUpdatedDate;
+      setDueDate(date);
+    });
+  }
+
+  useEffect(() => {
+    if (routeName.pathname.includes("/edit")) {
+      getTodo();
+    }
+  }, [routeName.pathname]);
+
   function addSubTask(value) {
-    console.log(value);
     setSubTaskList((prev) => [
       ...prev,
       {
@@ -40,8 +63,27 @@ const TodoAddScreen = () => {
     });
   }
 
-  function completedTask(value) {
-    console.log("completed task: " + value);
+  function updateTask() {
+    showSpinner();
+    var payload = {
+      Title: taskName,
+      Description: taskDesc,
+      DueDate: new Date(dueDate),
+      Status: "Pending",
+      UpdatedBy: "Dani",
+      SubTasks: subTaskList,
+    };
+    if (taskName != "" && taskDesc != "" && dueDate != "") {
+      var response = ApiServices.update(`/todo/${id}`, payload);
+      response
+        .then(() => {
+          navigate("/dashboard");
+        })
+        .catch((e) => {
+          showSnackBar(e.reponse.data);
+        })
+        .finally(() => hideSpinner());
+    }
   }
 
   function deleteSubTask(value) {
@@ -49,6 +91,13 @@ const TodoAddScreen = () => {
     setSubTaskList(newSubTasks);
   }
 
+  function handleSave() {
+    if (routeName.pathname.includes("/edit")) {
+      return updateTask();
+    } else {
+      saveTask();
+    }
+  }
   async function saveTask() {
     showSpinner();
     var payload = {
@@ -59,8 +108,6 @@ const TodoAddScreen = () => {
       UpdatedBy: "Dani",
       SubTasks: subTaskList,
     };
-
-    console.log(payload);
     if (taskName != "" && taskDesc != "" && dueDate != "") {
       var response = ApiServices.post("/todo", payload);
       response
@@ -210,7 +257,9 @@ const TodoAddScreen = () => {
                 id="task-due-date"
                 type="date"
                 value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                onChange={(e) => {
+                  setDueDate(e.target.value);
+                }}
               />
             </Box>
 
@@ -256,19 +305,23 @@ const TodoAddScreen = () => {
               ref={listRef}
               sx={{
                 maxHeight: 60,
-                overflowY: "scroll",
+                overflowY: "auto",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
               }}
             >
               {subTaskList &&
                 Array.isArray(subTaskList) &&
                 subTaskList.map((x, index) => (
-                  <div key={index}>
-                    <TodoSubTask
-                      taskInfo={x}
-                      deleteTask={deleteSubTask}
-                      completedTask={completedTask}
-                    ></TodoSubTask>
-                  </div>
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                    }}
+                  >
+                    <TodoSubTask taskInfo={x} deleteTask={deleteSubTask} />
+                  </Box>
                 ))}
             </Box>
           </Box>
@@ -293,7 +346,7 @@ const TodoAddScreen = () => {
             <Button
               variant="contained"
               sx={{ textTransform: "none" }}
-              onClick={() => saveTask()}
+              onClick={() => handleSave()}
             >
               Save
             </Button>
